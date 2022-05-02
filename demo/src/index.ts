@@ -1,12 +1,14 @@
 import * as admin from 'firebase-admin'
 import { makeUppercase } from './makeUppercase';
-import addmsg, { addMessageTwo } from './message';
+import msg from './message';
 
 if (admin.apps.length === 0) admin.initializeApp();
 
-export { addMessageTwo };
+export { makeUppercase };
 
-export { makeUppercase, addmsg };
+export {addMessageTwo, addMessage} from './message';
+export {msg};
+
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace NodeJS {

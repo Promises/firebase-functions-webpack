@@ -1,20 +1,24 @@
-import {
-    createPrinter,
-    createSourceFile,
-    EmitHint,
-    ExportDeclaration,
-    Identifier,
-    ImportDeclaration,
-    NamedExportBindings,
-    NamedImportBindings,
-    NewLineKind,
-    ScriptTarget,
-    StringLiteral,
-    SyntaxKind,
-} from 'typescript';
-import * as fs from 'fs';
+//
+// import webpack from 'webpack';
+// import path from 'path';
+// import VirtualModulesPlugin from "webpack-virtual-modules";
 
-const node = createSourceFile('x.ts', fs.readFileSync('./demo/src/index.ts', 'utf-8'), ScriptTarget.Latest);
+import md5File from 'md5-file';
+import { TypescriptParse } from './typescript-parse';
+import { Packer } from './packer';
+import path from 'path';
+
+async function main() {
+    const seperatedFunctions = TypescriptParse('./demo/src/index.ts');
+    const createdFiles = await Packer(seperatedFunctions);
+
+    // console.log(createdFiles);
+    Object.keys(createdFiles).forEach((name) =>
+        console.log(name, md5File.sync(path.resolve(__dirname, '..', 'demo', 'dist', name, 'index.js')))
+    );
+}
+
+main();
 
 //
 // console.log(node)
@@ -22,72 +26,49 @@ const node = createSourceFile('x.ts', fs.readFileSync('./demo/src/index.ts', 'ut
 // console.log(ts.SyntaxKind[node.kind])
 // node.forEachChild(child => console.log(ts.SyntaxKind[child.kind]))
 
-const getNamedDefinitions = (imports?: NamedImportBindings | NamedExportBindings) => {
-    if (!imports) {
-        return '';
-    }
-    if (!('elements' in imports)) {
-        return '';
-    }
-    const importNames: string[] = imports.elements.map((e) => e.name.text);
-
-    return importNames ? `{ ${importNames.join(', ')} }` : '';
-};
-const getDefaultDefinition = (i?: Identifier) => {
-    return i ? i.text : '';
-};
-
-/**
- * <importname, from>
- */
-const imports: Record<string, { from: string; default: boolean }> = {};
-
-node.forEachChild((child) => {
-    // console.log(SyntaxKind[child.kind]);
-    if (SyntaxKind[child.kind] === 'ExportDeclaration') {
-        const decl: ExportDeclaration = child as ExportDeclaration;
-        let module: StringLiteral | undefined = decl.moduleSpecifier as StringLiteral | undefined;
-        const defaultExport: Identifier | undefined = 'name' in decl.exportClause ? decl.exportClause.name : undefined;
-        const namedExports: NamedExportBindings | undefined = decl.exportClause;
-
-        const cleanedExport = defaultExport
-            ? `* as ${getDefaultDefinition(defaultExport)}`
-            : getNamedDefinitions(namedExports);
-
-        if (defaultExport && module) {
-            console.log(`export ${cleanedExport} from '${module?.text}';`);
-            return;
-        }
-
-        if (namedExports && 'elements' in namedExports) {
-            namedExports.elements.forEach((e) => console.log(e.name.text, module ? module.text : imports[e.name.text]));
-            return;
-        }
-        console.error('unknown data', cleanedExport, module);
-    } else if (SyntaxKind[child.kind] === 'ImportDeclaration') {
-        const decl: ImportDeclaration = child as ImportDeclaration;
-        const defaultImport: Identifier | undefined = decl.importClause.name;
-        const namedImports: NamedImportBindings | undefined = decl.importClause.namedBindings;
-        const module: StringLiteral = decl.moduleSpecifier as StringLiteral;
-
-        if (defaultImport) {
-            imports[defaultImport.text] = { from: module.text, default: true };
-        }
-
-        if (namedImports && 'elements' in namedImports) {
-            namedImports.elements.forEach((e) => (imports[e.name.text] = { from: module.text, default: false }));
-        }
-        // if (false) {
-        //     console.log(
-        //         `import ${[getDefaultDefinition(defaultImport), getNamedDefinitions(namedImports)]
-        //             .filter((a) => !!a)
-        //             .join(', ')} from '${module.text}';`
-        //     );
-        // }
-    } else {
-        const printer = createPrinter({ newLine: NewLineKind.LineFeed });
-        if (false) {
-            console.log(printer.printNode(EmitHint.Unspecified, child, node));
-        }
-    }
-});
+// console.log(contants.join('\n'));
+//
+//
+// const virtualModules = new VirtualModulesPlugin({
+//     [path.resolve(__dirname, '..', 'demo', 'src','index3.ts')]: printer.printNode(EmitHint.Unspecified, node, node),
+//     [path.resolve(__dirname, '..', 'demo', 'src','index4.ts')]: printer.printNode(EmitHint.Unspecified, node, node)
+// });
+// console.log(printer.printNode(EmitHint.Unspecified, node, node));
+//
+// webpack(
+//     {
+//         mode: 'production',
+//         context: path.resolve(__dirname, '..', 'demo'),
+//         entry: { testOne: './src/index.ts', testThree: './src/index4.ts', testFour: './src/index3.ts' },
+//         module: {
+//             rules: [
+//                 {
+//                     test: /\.tsx?$/,
+//                     use: 'ts-loader',
+//                     exclude: /node_modules/,
+//                 },
+//             ],
+//         },
+//         plugins: [
+//             virtualModules
+//         ],
+//         target: 'node',
+//         resolve: {
+//             extensions: ['.tsx', '.ts', '.js'],
+//             modules: [path.resolve(__dirname, '..', 'demo', 'node_modules'), 'node_modules'],
+//         },
+//         output: {
+//             filename: '[name]/index.js',
+//             path: path.resolve(__dirname, '..', 'demo', 'dist'),
+//         },
+//     },
+//     (err, stats) => {
+//         // [Stats Object](#stats-object)
+//         if (err || stats.hasErrors()) {
+//             // [Handle errors here](#error-handling)
+//             // console.log('ERROR', err, stats.compilation.errors);
+//         }
+//         // Done processing
+//         // console.log('might be done?');
+//     }
+// );
