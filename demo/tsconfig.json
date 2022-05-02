@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noUnusedLocals": true,
+    "outDir": "lib",
+    "sourceMap": true,
+    "strict": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "target": "es2019",
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "compileOnSave": true,
+  "include": ["src"],
+  "exclude": ["**/*.test.ts"]
+}
