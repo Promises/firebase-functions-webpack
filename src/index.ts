@@ -8,9 +8,7 @@ import { Packer } from './packer';
 import { firebaseDeploy } from './firebase-deploy';
 
 admin.initializeApp({
-    credential: admin.credential.cert(
-        JSON.parse(Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_KEY, 'base64').toString())
-    ),
+    credential: admin.credential.cert(JSON.parse(Buffer.from(process.env.SERVICE_ACCOUNT_KEY, 'base64').toString())),
     databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`,
     projectId: process.env.FIREBASE_PROJECT_ID,
 });
