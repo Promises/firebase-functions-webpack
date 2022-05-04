@@ -2,19 +2,22 @@ import path from 'path';
 import VirtualModulesPlugin from 'webpack-virtual-modules';
 import webpack from 'webpack';
 
-export function Packer(content: { name: string; template: string }[]): Promise<Record<string, string>> {
+export function Packer(
+    content: { name: string; template: string }[],
+    baseDir: string
+): Promise<Record<string, string>> {
     const modules: Record<string, string> = {};
     const entries: Record<string, string> = {};
     content.forEach((func) => {
-        modules[path.resolve(__dirname, '..', 'demo', 'src', `func${func.name}.ts`)] = func.template;
-        entries[func.name] = path.resolve(__dirname, '..', 'demo', 'src', `func${func.name}.ts`);
+        modules[path.resolve(baseDir, 'src', `func${func.name}.ts`)] = func.template;
+        entries[func.name] = path.resolve(baseDir, 'src', `func${func.name}.ts`);
     });
     const virtualModules = new VirtualModulesPlugin(modules);
     return new Promise((resolve, reject) => {
         webpack(
             {
                 mode: 'production',
-                context: path.resolve(__dirname, '..', 'demo'),
+                context: baseDir,
                 entry: entries,
                 module: {
                     rules: [
@@ -29,17 +32,18 @@ export function Packer(content: { name: string; template: string }[]): Promise<R
                 target: 'node',
                 resolve: {
                     extensions: ['.tsx', '.ts', '.js'],
-                    modules: [path.resolve(__dirname, '..', 'demo', 'node_modules'), 'node_modules'],
+                    // modules: [path.resolve(__dirname, '..', 'demo', 'node_modules'), 'node_modules'],
                 },
                 output: {
                     filename: '[name]/index.js',
-                    path: path.resolve(__dirname, '..', 'demo', 'dist'),
+                    path: path.resolve(baseDir, 'dist'),
                 },
             },
             (err, stats) => {
                 // [Stats Object](#stats-object)
                 if (err || stats.hasErrors()) {
                     // [Handle errors here](#error-handling)
+                    console.error(err || stats.compilation.errors);
                     return reject(err || stats.compilation.errors);
                 }
                 // Done processing

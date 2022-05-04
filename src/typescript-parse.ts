@@ -13,9 +13,14 @@ import {
     StringLiteral,
     SyntaxKind,
 } from 'typescript';
+import path from 'path';
 
-export function TypescriptParse(inputFile: string) {
-    const node = createSourceFile('x.ts', fs.readFileSync(inputFile, 'utf-8'), ScriptTarget.Latest);
+export function TypescriptParse(inputFile: string, baseDir: string) {
+    const node = createSourceFile(
+        'x.ts',
+        fs.readFileSync(path.resolve(baseDir, inputFile), 'utf-8'),
+        ScriptTarget.Latest
+    );
 
     /**
      * <importname, from>

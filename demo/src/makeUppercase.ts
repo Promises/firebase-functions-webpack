@@ -5,7 +5,7 @@ export const makeUppercase = FBFunction.firestore.document('/messages/{documentI
     const { original } = snap.data();
 
     // Access the parameter `{documentId}` with `context.params`
-    functions.logger.log('Uppercasing', context.params.documentId, original);
+    functions.logger.log('Uppercasing the thingy', context.params.documentId, original);
 
     const uppercase = original.toUpperCase();
 

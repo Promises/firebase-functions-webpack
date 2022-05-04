@@ -17,3 +17,5 @@ lib
 .firebaserc
 
 dist
+
+.env
