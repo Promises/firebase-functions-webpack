@@ -32,7 +32,7 @@ export function Packer(
                 target: 'node',
                 resolve: {
                     extensions: ['.tsx', '.ts', '.js'],
-                    // modules: [path.resolve(__dirname, '..', 'demo', 'node_modules'), 'node_modules'],
+                    modules: [path.resolve(__dirname, '..', 'node_modules', 'ts-loader'), 'ts-loader'],
                 },
                 output: {
                     filename: '[name]/index.js',
