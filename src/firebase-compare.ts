@@ -2,7 +2,7 @@ import admin, { firestore } from 'firebase-admin';
 
 export async function FirebaseCompare(
     hashes: Record<string, string>
-): Promise<{ update: { hash: string; name: string }[]; deleted: string[] }> {
+): Promise<{ update: { hash: string; name: string }[]; deleted: string[]; has_changes: boolean }> {
     const hashesSS = await admin.firestore().collection('firebase-functions-webpack').doc('hashes').get();
     const hashesData = hashesSS.data();
     const existingHashes: Record<string, { hash: string; last_deployed: firestore.Timestamp }> = hashesData
@@ -19,5 +19,9 @@ export async function FirebaseCompare(
             toUpdate.push({ name, hash });
         }
     });
-    return { update: toUpdate, deleted: Object.keys(existingHashes) };
+    return {
+        update: toUpdate,
+        deleted: Object.keys(existingHashes),
+        has_changes: toUpdate.length > 0 || Object.keys(existingHashes).length > 0,
+    };
 }
