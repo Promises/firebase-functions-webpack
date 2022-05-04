@@ -9,8 +9,8 @@ import { firebaseDeploy } from './firebase-deploy';
 
 admin.initializeApp({
     credential: admin.credential.cert(JSON.parse(Buffer.from(process.env.SERVICE_ACCOUNT_KEY, 'base64').toString())),
-    databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`,
-    projectId: process.env.FIREBASE_PROJECT_ID,
+    databaseURL: `https://${process.env.PROJECT_ID}.firebaseio.com`,
+    projectId: process.env.PROJECT_ID,
 });
 
 async function main(functions_dir: string, should_publish: boolean) {

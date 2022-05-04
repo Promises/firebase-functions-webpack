@@ -11,7 +11,7 @@ export async function firebaseDeploy(changes: { update: { hash: string; name: st
 
     for (const file of changes.update) {
         const config = {
-            project: process.env.FIREBASE_PROJECT_ID,
+            project: process.env.PROJECT_ID,
             cwd: path.resolve(__dirname, '..', 'demo', 'dist', file.name),
             only: 'functions',
             token: process.env.FIREBASE_TOKEN,
