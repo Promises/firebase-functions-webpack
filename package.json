@@ -1,6 +1,6 @@
 {
   "name": "firebase-functions-webpack",
-  "version": "0.1.5",
+  "version": "0.1.11",
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
     "build": "rimraf ./lib/**/* && tsc"
